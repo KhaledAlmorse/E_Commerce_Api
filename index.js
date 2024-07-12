@@ -38,6 +38,9 @@ if (process.env.NODE_ENV == "development") {
 
 //Routes
 mountRoutes(app);
+app.get("/", (req, res) => {
+  res.send("<h1>صلي علي النبي كدا</br></br> 😎😂 متجيش عشان مفيش الالا </h1>");
+});
 
 app.all("*", (req, res, next) => {
   next(new ApiError(`Cant Find This Route ${req.originalUrl}`, 400));
