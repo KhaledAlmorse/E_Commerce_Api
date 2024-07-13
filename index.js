@@ -13,6 +13,7 @@ const dbConnection = require("./config/database");
 
 //Router
 const mountRoutes = require("./routes");
+const { webhookCheckOut } = require("./services/orderService");
 
 //Connect With db
 dbConnection();
@@ -26,6 +27,12 @@ app.options("*", cors());
 
 // compress all responses
 app.use(compression());
+
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckOut
+);
 
 //Midlwares
 app.use(express.json());
