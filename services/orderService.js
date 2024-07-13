@@ -7,6 +7,7 @@ const ApiError = require("../utils/apiError");
 const Order = require("../models/orderModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const User = require("../models/userModel");
 
 // @desc    create cash order
 // @route   POST /api/v1/orders/cartId
