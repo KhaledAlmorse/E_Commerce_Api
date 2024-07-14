@@ -10,6 +10,7 @@ const { header } = require("express-validator");
 const sendEmail = require("../utils/sentEmail");
 
 const createToken = require("../utils/CreateToken");
+const { sanitizeUser } = require("../utils/sanatizeData");
 
 /**
  * @description singup
@@ -26,7 +27,7 @@ exports.singup = asyncHandler(async (req, res, next) => {
   //2-Genreate Token
   const token = createToken(user._id);
 
-  res.status(201).json({ data: user, token });
+  res.status(201).json({ data: sanitizeUser(user), token });
 });
 
 exports.login = asyncHandler(async (req, res, next) => {

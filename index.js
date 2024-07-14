@@ -5,6 +5,10 @@ const dotenv = require("dotenv");
 const morgan = require("morgan");
 const cors = require("cors");
 const compression = require("compression");
+const rateLimit = require("express-rate-limit");
+const hpp = require("hpp");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 dotenv.config({ path: "config.env" });
 const ApiError = require("./utils/apiError");
@@ -35,13 +39,40 @@ app.post(
 );
 
 //Midlwares
-app.use(express.json());
+app.use(express.json({ limit: "20kb" }));
 app.use(express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV == "development") {
   app.use(morgan("dev"));
   console.log(`mode : ${process.env.NODE_ENV}`);
 }
+
+// To remove data using these defaults:
+app.use(mongoSanitize());
+// make sure this comes before any routes
+app.use(xss());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  message:
+    "Too many account creatrd from this Ip, please try again after an 15 mints",
+});
+// Apply the rate limiting middleware to all requests.
+app.use("/api", limiter);
+
+//middleware to protect against HTTP Parameter Pollution attacks
+app.use(
+  hpp({
+    whitelist: [
+      "price",
+      "sold",
+      "quantity",
+      "ratingsAverage",
+      "ratingsQuantity",
+    ],
+  })
+);
 
 //Routes
 mountRoutes(app);
